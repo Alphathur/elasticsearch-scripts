@@ -12,6 +12,7 @@ es_index = "server-log"
 es_type = "doc"
 csv_header = ["time", "api",  "parameterMap", "response", "sessionId", "page"]
 # Replace the following Query with your own Elastic Search Query
+# If you want to export all fields, remove "_source" field, and set line 46 as "w = csv.DictWriter(f, fields)"
 res = es.search(index=es_index, doc_type=es_type, body={
     "query": {
         "match_all": {}
