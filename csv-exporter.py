@@ -12,7 +12,7 @@ es_index = "server-log"
 es_type = "doc"
 csv_header = ["time", "api",  "parameterMap", "response", "sessionId", "page"]
 # Replace the following Query with your own Elastic Search Query
-# If you want to export all fields, remove "_source" field, and set line 46 as "w = csv.DictWriter(f, fields)"
+# If you want to export all fields, remove "_source" field
 res = es.search(index=es_index, doc_type=es_type, body={
     "query": {
         "match_all": {}
@@ -29,10 +29,12 @@ def export(file_name):
     :param file_name: the file name you wish to export
     :return: None
     """
-    mapping = es.indices.get_mapping(index=es_index, doc_type=es_type)
+    # export all fields if csv_header is not set
     fields = []
     for field in mapping[es_index]['mappings'][es_type]['properties']:
         fields.append(field)
+    if len(csv_header):
+        fields = csv_header
     with open(file_name, 'w') as f:
         f.write(codecs.BOM_UTF8)
         header_present = False
@@ -43,7 +45,7 @@ def export(file_name):
             if not len(my_dict):
                 continue
             if not header_present:
-                w = csv.DictWriter(f, csv_header)
+                w = csv.DictWriter(f, fields)
                 w.writeheader()
                 header_present = True
             deal_chinese_words(my_dict)
