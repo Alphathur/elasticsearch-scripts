@@ -30,6 +30,7 @@ def export(file_name):
     :return: None
     """
     # export all fields if csv_header is not set
+    mapping = es.indices.get_mapping(index=es_index, doc_type=es_type)
     fields = []
     for field in mapping[es_index]['mappings'][es_type]['properties']:
         fields.append(field)
